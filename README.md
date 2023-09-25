@@ -1,46 +1,28 @@
-# Atividade de Plataformas Cognitivas Docker  
-__Prof. MSc. Elthon Manhas de Freitas__  
+# Atividade de Plataformas Cognitivas Docker - MBA em Data Science FIAP 3DTS
 
-![alt text](images/capa.png)
+Este repositório contém os recursos relacionados à atividade de Plataformas Cognitivas Docker ministrada pelo Prof. MSc. Elthon Manhas de Freitas para a turma MBA em Data Science 3DTS da FIAP (2022/23).
 
-Repositório para as atividades de plataformas cognitivas ligadas a Serving em Containers usando o Docker
+## Integrantes da Equipe
+- Marcus Vinicius Fugagnoli Laranjeira
+  - RM: 346611
+  - Email: mvlaran@gmail.com
 
+- Suélen Canabarro Oliveira Andrade
+  - RM: 346431
+  - Email: suelen.canabarro@hotmail.com
 
-Informações gerais:
-`Python 3.7`
+- Rafael Alves Gama
+  - RM: 347064
+  - Email: rafael.allvesgama@gmail.com
 
-## 1. Gerar imagem do serviço:
+## Resumo do Trabalho
+O objetivo desta atividade é a criação de um painel para um aprovador de empréstimo em uma empresa de crédito pessoal. O trabalho envolve as seguintes etapas:
 
+1. Criação de Modelos Customizados de Machine Learning para:
+   - Predição de Inadimplência
+   - Clusterização de Clientes
 
-```
-docker build -t platserver -f dockerbuilds/DockerServer.txt .
-```
+2. Implantação dos Modelos em uma Máquina Virtual na Nuvem Microsoft Azure
 
-## 2. Criar e rodar os Contêineres:
-
-Criar uma rede que será compartilhada entre todos os conteineres:  
-```
-docker network create plat_network
-docker network inspect plat_network
-```
-
-Apenas entrar no contêiner, sem executar nada:
-```
-docker run -it --network plat_network -p 8080:8080 -v $(pwd)/config:/myServer/config platserver /bin/bash
-```
-
-Criar e rodar microconteineres para os modelos preditivos:  
-```
-sudo docker run -d --network plat_network -p 10001:8080 --restart always --name serving01 platserver python servingmodel.py models/modelo01.joblib 8080
-sudo docker run -d --network plat_network -p 10002:8080 --restart always --name serving02 platserver python servingmodel.py models/modelo02.joblib 8080
-```
-
-Criar e rodar container de gerenciador de modelos:  
-```
-bash geraconfig.sh
-docker run -d --network plat_network -p 443:8080 --restart always -v $(pwd)/config:/myServer/config -v $(pwd)/Log:/myServer/Log --name modelmanager platserver python modelmanager.py 
-docker run -it --network plat_network -p 443:8080  -v $(pwd)/config:/myServer/config -v $(pwd)/Log:/myServer/Log --name modelmanager platserver /bin/bash
-
-```
-
-Ok, se até aqui tudo estiver certo, pode começar a utilizar a plataforma para fazer predições.
+## Contato
+Para mais informações ou dúvidas, entre em contato com algum dos integrantes da equipe listados acima.
