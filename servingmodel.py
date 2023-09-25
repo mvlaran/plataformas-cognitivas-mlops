@@ -133,13 +133,17 @@ def call_cluster(request = request):
 
     print("Clusterizando para {0} registros".format(campos.shape[0]))
 
+    numericas = ['property_value', 'income', 'Credit_Score']
+    scaler = joblib.load('../models/loan_scaler.joblib')
+    campos[numericas] = scaler.transform(campos[numericas])
+
     prediction = cluster_model.predict(campos)
     persona = 'north' if prediction == 0 else 'south'
     prop_fraud =  '> 0.5' if persona == 'north' else '<= 0.5'
 
-    ret = json.dumps({'cluster': list(prediction),
-                      'persona': list(persona),
-                      'prop_fraud:': list(prop_fraud)}, cls=NpEncoder)
+    ret = json.dumps({'cluster': prediction,
+                      'persona': persona,
+                      'prop_fraud:': prop_fraud}, cls=NpEncoder)
 
     return app.response_class(response=ret, mimetype='application/json')
 
