@@ -67,7 +67,7 @@ def call_predict(request = request):
 
     for categorica in categoricas:
         if categorica not in encoders:
-            encoders[categorica] = joblib.load( '/models/loan_' + categorica + '_label_encoder.joblib')
+            encoders[categorica] = joblib.load( 'models/loan_' + categorica + '_label_encoder.joblib')
         for valor in campos[categorica].unique():
           if valor not in categoricas_val[categorica]:
               return "Dados de chamada da API estão incorretos. (categorical)", 400
@@ -125,7 +125,7 @@ def call_cluster(request = request):
 
     for categorica in categoricas:
         if categorica not in encoders:
-            encoders[categorica] = joblib.load( '/models/loan_' + categorica + '_label_encoder.joblib')
+            encoders[categorica] = joblib.load( 'models/loan_' + categorica + '_label_encoder.joblib')
         for valor in campos[categorica].unique():
           if valor not in categoricas_val[categorica]:
               return "Dados de chamada da API estão incorretos. (categorical)", 400
@@ -134,7 +134,7 @@ def call_cluster(request = request):
     print("Clusterizando para {0} registros".format(campos.shape[0]))
 
     numericas = ['property_value', 'income', 'Credit_Score']
-    scaler = joblib.load('../models/loan_scaler.joblib')
+    scaler = joblib.load('models/loan_scaler.joblib')
     campos[numericas] = scaler.transform(campos[numericas])
 
     prediction = cluster_model.predict(campos)
@@ -156,8 +156,8 @@ if __name__ == '__main__':
 
     print(args)
 
-    predict_model = joblib.load( '/models/loan_xgb.joblib')
-    cluster_model = joblib.load( '/models/loan_kmeans.joblib')
+    predict_model = joblib.load( 'models/loan_xgb.joblib')
+    cluster_model = joblib.load( 'models/loan_kmeans.joblib')
     # app.run(port=8080, host='0.0.0.0')
     app.run(port=args[1], host='0.0.0.0')
     pass
