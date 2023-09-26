@@ -2,7 +2,7 @@ import joblib
 import pandas as pd
 import json
 import numpy as np
-from flask import Flask, request
+from flask import Flask, request, render_template
 import sys
 
 class NpEncoder(json.JSONEncoder):
@@ -16,14 +16,13 @@ class NpEncoder(json.JSONEncoder):
         else:
             return super(NpEncoder, self).default(obj)
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder="../templates")
 app.json_encoder = NpEncoder
 modelo = None
 
 @app.route("/", methods=['GET', 'POST'])
 def call_home(request = request):
-    print(request.values)
-    return "You shouldn't be here. This access has been logged. Go away! \n"
+    return render_template('index.html')
 
 @app.route("/predict", methods=['POST'])
 def call_predict(request = request):
@@ -143,7 +142,7 @@ def call_cluster(request = request):
         prop_fraud =  '> 0.5' if persona == 'north' else '<= 0.5'
         ret = json.dumps({'cluster': prediction,
                           'persona': persona,
-                          'prop_fraud:': prop_fraud}, cls=NpEncoder)
+                          'prop_fraud': prop_fraud}, cls=NpEncoder)
     else:
         personas = []
         prop_frauds = []
@@ -154,7 +153,7 @@ def call_cluster(request = request):
             prop_frauds.append(prop_fraud)
         ret = json.dumps({'cluster': list(prediction),
                           'persona': list(personas),
-                          'prop_fraud:': list(prop_frauds)}, cls=NpEncoder)
+                          'prop_fraud': list(prop_frauds)}, cls=NpEncoder)
 
     return app.response_class(response=ret, mimetype='application/json')
 
