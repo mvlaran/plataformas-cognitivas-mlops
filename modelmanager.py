@@ -2,7 +2,7 @@ from flask import Flask,request,redirect,Response, send_file, make_response, ren
 import requests
 import sys, os, io, uuid, datetime, json, zipfile
 
-app = Flask(__name__, template_folder="../templates")
+app = Flask(__name__, template_folder="templates")
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

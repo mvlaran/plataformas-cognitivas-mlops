@@ -16,7 +16,7 @@ class NpEncoder(json.JSONEncoder):
         else:
             return super(NpEncoder, self).default(obj)
 
-app = Flask(__name__, template_folder="../templates")
+app = Flask(__name__, template_folder="templates")
 app.json_encoder = NpEncoder
 modelo = None
 
