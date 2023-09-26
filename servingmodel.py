@@ -138,12 +138,25 @@ def call_cluster(request = request):
     campos[numericas] = scaler.transform(campos[numericas])
 
     prediction = cluster_model.predict(campos)
-    persona = 'north' if prediction == 0 else 'south'
-    prop_fraud =  '> 0.5' if persona == 'north' else '<= 0.5'
+    if isinstance(prediction, np.ndarray):
+        personas = []
+        prop_frauds = []
+        for predict in prediction:
+            persona = 'north' if predict == 0 else 'south'
+            prop_fraud = '> 0.5' if persona == 'north' else '<= 0.5'
 
-    ret = json.dumps({'cluster': prediction,
-                      'persona': persona,
-                      'prop_fraud:': prop_fraud}, cls=NpEncoder)
+            personas.append(persona)
+            prop_frauds.append(prop_fraud)
+        
+        ret = json.dumps({'cluster': list(prediction),
+                          'persona': list(personas),
+                          'prop_fraud:': list(prop_frauds)}, cls=NpEncoder)
+    else:
+        persona = 'north' if prediction == 0 else 'south'
+        prop_fraud =  '> 0.5' if persona == 'north' else '<= 0.5'
+        ret = json.dumps({'cluster': prediction,
+                          'persona': persona,
+                          'prop_fraud:': prop_fraud}, cls=NpEncoder)
 
     return app.response_class(response=ret, mimetype='application/json')
 
