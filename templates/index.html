@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Análise de Crédito e Propensão à Fraude</title>
+    <!-- Adicione os links para os arquivos CSS do Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+      /* Adicione estilos personalizados aqui */
+
+      /* Estilos para a div "Dados do Cliente" */
+      .card {
+          margin-top: 20px;
+      }
+
+      /* Estilos para a div de erro */
+      .alert {
+          display: none;
+      }
+
+      /* Estilos para a div "Análise de Crédito e Propensão à Fraude" */
+      #resultAnalysis {
+          margin-top: 20px;
+      }
+
+      /* Estilos para a div "Resultado da chamada /predict" e "Resultado da chamada /cluster" */
+      #resultPredict, #resultCluster {
+          margin-top: 10px;
+          border: 1px solid #ccc;
+          padding: 10px;
+      }
+
+      /* Estilos para os botões */
+      #submitButton, #resetButton {
+          margin-top: 10px;
+      }
+      .title-with-underline {
+          font-size: 18px; /* Tamanho da fonte reduzido */
+      }
+
+      .title-with-underline:after {
+          content: "";
+          display: block;
+          border-bottom: 1px solid #ccc; /* Cor e estilo do traço */
+          margin-top: 5px; /* Espaço entre o título e o traço */
+      }
+      /* Estilos para o link "raw data" */
+      .raw-data-link {
+          font-size: 10px; /* Letras pequenas */
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          padding: 5px;
+          background-color: #fff; /* Cor de fundo */
+          text-decoration: none;
+      }
+
+      /* Estilos para a div de conteúdo oculta */
+      .raw-data-content {
+          font-size: 10px;
+          font-family: monospace;
+          white-space: pre;
+          border: 1px solid #ced4da;
+          margin-top: -10px;
+          padding: 10px;
+          margin-left: 10px;
+          margin-right: 10px;
+          margin-bottom: 10px;
+      }
+
+      /* Classe para esconder elementos */
+      .hidden {
+        display: none;
+      }
+      
+      
+      </style>
+</head>
+<body>
+
+    <!-- Modal de Análise Preditiva -->
+    <div class="modal fade" id="loadingModal" tabindex="-1" role="dialog" aria-labelledby="loadingModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="loadingModalLabel">Análise Preditiva</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+              <div class="modal-body text-center">
+                  <img src="https://media.tenor.com/hlKEXPvlX48AAAAi/loading-loader.gif" alt="Aguarde..." style="width: 14%;"/>
+                  <p>Aguarde...</p>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="container mt-5">
+        <!-- Título da Página -->
+        <h1 class="text-center">Análise de Crédito e<br>Propensão à Fraude</h1>
+          
+        <div class="card" id="clientDataForm">
+            <div class="card-header">
+                <h3 class="text-center">Dados do Cliente</h3>
+            </div>
+            <div class="card-body">
+                <form id="creditForm">
+                    <!-- Gênero -->
+                    <div class="form-group">
+                        <label for="gender">Gênero:</label>
+                        <select class="form-control" id="gender" name="gender">
+                            <option value="">Escolha...</option>
+                            <option value="Male">Homem</option>
+                            <option value="Female">Mulher</option>
+                            <option value="Joint">Casal</option>
+                        </select>
+                    </div>
+                    <!-- Crédito Pré-Aprovado -->
+                    <div class="form-group">
+                        <label for="creditPreApproved">Crédito Pré-Aprovado:</label>
+                        <select class="form-control" id="creditPreApproved" name="creditPreApproved">
+                            <option value="">Escolha...</option>
+                            <option value="pre">Sim</option>
+                            <option value="nopre">Não</option>
+                        </select>
+                    </div>
+                    <!-- Faixa Etária -->
+                    <div class="form-group">
+                        <label for="age">Faixa Etária:</label>
+                        <select class="form-control" id="age" name="age">
+                            <option value="">Escolha...</option>
+                            <option value="<25">Menos de 25 anos</option>
+                            <option value="25-34">25 a 34 anos</option>
+                            <option value="35-44">35 a 44 anos</option>
+                            <option value="45-54">45 a 54 anos</option>
+                            <option value="55-64">55 a 64 anos</option>
+                            <option value="65-74">65 a 74 anos</option>
+                            <option value=">74">Mais de 74 anos</option>
+                        </select>
+                    </div>
+                    <!-- Região -->
+                    <div class="form-group">
+                        <label for="region">Região:</label>
+                        <select class="form-control" id="region" name="region">
+                            <option value="">Escolha...</option>
+                            <option value="North">Norte</option>
+                            <option value="North-East">Nordeste</option>
+                            <option value="central">Central</option>
+                            <option value="south">Sul</option>
+                        </select>
+                    </div>
+                    <!-- Valor da Propriedade -->
+                    <div class="form-group">
+                        <label for="propertyValue">Valor da Propriedade:</label>
+                        <input type="number" class="form-control" id="propertyValue" name="propertyValue" min="0">
+                    </div>
+                    <!-- Valor da Renda -->
+                    <div class="form-group">
+                        <label for="income">Valor da Renda:</label>
+                        <input type="number" class="form-control" id="income" name="income" min="0">
+                    </div>
+                    <!-- Score de Crédito -->
+                    <div class="form-group">
+                        <label for="creditScore">Score de Crédito:</label>
+                        <input type="number" class="form-control" id="creditScore" name="creditScore" min="0">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="submitButton" disabled>Enviar</button>
+                    <button type="button" class="btn btn-danger" id="resetButton">Resetar Formulário</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Resultado da Análise -->
+        <div id="resultAnalysis" class="card mt-4 hidden">
+            <div class="card-header">
+                <h3 class="text-center">Resultado da Análise Preditiva</h3>
+            </div>
+            <div class="card-body">
+                <div id="resultPredict">
+                    <h4 class="text-left title-with-underline">Probabilidade de Inadimplência</h4>
+                    <!-- Aqui será exibida a resposta da chamada /predict -->
+                    <span id="resultPredictContent" style="font-size: 14px;"></span>
+                </div>
+                <div id="resultCluster">
+                    <h4 class="text-left title-with-underline">Propensão à Fraude</h4>
+                    <!-- Aqui será exibida a resposta da chamada /cluster -->
+                    <span id="resultClusterContent" style="font-size: 14px;"></span>
+                </div>
+                <br>
+                <button type="button" class="btn btn-primary" id="resetFormButton">Nova Consulta</button>
+            </div>
+            <a href="javascript:void(0);" class="raw-data-link">raw data</a>
+            <div id="rawData" class="raw-data-content hidden">
+                <div id="rawDataContent" style="margin-top: -35px;margin-bottom: -35px;"></div>
+            </div>
+        </div>
+
+        <!-- Erros -->
+        <div id="errorDisplay" class="alert alert-danger mt-4 hidden">
+            <div id="errorMessage"></div>
+            <br>
+            <button type="button" class="btn btn-danger" id="resetButtonError">Resetar Formulário</button>
+        </div>
+    </div>
+    <!-- Adicione os scripts do Bootstrap e do jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      $(document).ready(function() {
+
+        const SERVER_IP = '20.84.48.88';
+        // const SERVER_IP = 'localhost';
+        const PREDICT_ENDPOINT = "/predict?model=predict"
+        // const PREDICT_ENDPOINT = "/predict"
+        const CLUSTER_ENDPOINT = "/predict?model=cluster"
+        // const CLUSTER_ENDPOINT = "/cluster"
+        const SERVER_PORT = '443';
+        // const SERVER_PORT = '8080';
+
+        // Mostra mensagem de erro
+        function showError(msg = "Ocorreu um erro"){
+          $('#errorMessage').html(msg);
+          $('#clientDataForm').fadeOut(300, function() {
+            $("#errorDisplay").removeClass("hidden");
+            $('#errorDisplay').fadeIn()
+          });
+        }
+
+        function hideError() {
+          $('#errorDisplay').fadeOut(300, function() {
+            $('#clientDataForm').fadeIn();
+            $("#errorMessage").empty();
+            $("#errorDisplay").addClass("hidden");
+          })
+        }
+
+        // Reset do formulário
+        function resetForm() {
+            location.reload();
+        }
+
+        // Habilita/desabilita o botão de envio com base no preenchimento do formulário
+        $("form :input").on("input", function() {
+            const formValid = validateForm();
+            $("#submitButton").prop("disabled", !formValid);
+        });
+
+        // Event listener para o botão de envio
+        $("#submitButton").click(function() {
+            const formValid = validateForm();
+            if (formValid) {
+                // Crie um objeto JSON com os valores do formulário
+                const formData = [{
+                    Gender: $("#gender").val(),
+                    approv_in_adv: $("#creditPreApproved").val(),
+                    property_value: parseFloat($("#propertyValue").val()),
+                    income: parseFloat($("#income").val()),
+                    Credit_Score: parseInt($("#creditScore").val()),
+                    age: $("#age").val(),
+                    Region: $("#region").val(),
+                }];
+
+                // Realize a chamada AJAX para /predict (substitua pela URL apropriada)
+                $.ajax({
+                    url: "http://" + SERVER_IP + ":" + SERVER_PORT + PREDICT_ENDPOINT,
+                    method: "POST",
+                    data: JSON.stringify(formData),
+                    contentType: "application/json",
+                    beforeSend: function() {
+                      $('#loadingModal').modal('show');
+                    },
+                    success: function(data) {
+                      $('#rawDataContent').html("predict = " + JSON.stringify(data, null, 2));
+                      htmlResult = "";
+                      if (data.prediction[0] == 0) {
+                          htmlResult += "<strong>Cliente Adimplente</strong>.<br>Probabilidade de adimplência de ";
+                          adimProb = (data.proba[0][0] * 100).toFixed(2);
+                          inadimProb = (data.proba[0][1] * 100).toFixed(2);
+                          htmlResult += adimProb + "% (probabilidade de inadimplência de " + inadimProb + "%).";
+                      } else {
+                          htmlResult += "<strong>Cliente Inadimplente</strong>.<br>Probabilidade de inadimplência de ";
+                          adimProb = (data.proba[0][0] * 100).toFixed(2);
+                          inadimProb = (data.proba[0][1] * 100).toFixed(2);
+                          htmlResult += inadimProb + "% (probabilidade de adimplência de " + adimProb + "%)."
+                      }
+                      $('#resultPredictContent').html(htmlResult);
+
+                      // Realize a chamada AJAX para /cluster (substitua pela URL apropriada)
+                      $.ajax({
+                          url: "http://" + SERVER_IP + ":" + SERVER_PORT + CLUSTER_ENDPOINT,
+                          method: "POST",
+                          data: JSON.stringify(formData),
+                          contentType: "application/json",
+                          success: function(data) {
+                              $("#rawDataContent").html($("#rawDataContent").html() + "\n\ncluster = " + JSON.stringify(data, null, 2));
+                              htmlResult = "";
+                              htmlResult += "Cliente tipo <strong>" + data.persona[0].charAt(0).toUpperCase() + data.persona[0].slice(1) + "</strong> (Cluster " + data.cluster[0] + ")";
+                              if (data.cluster[0] == 0) {
+                                  htmlResult += " com ALTA (" + data.prop_fraud[0] + ")";
+                              } else {
+                                  htmlResult += " com BAIXA (" + data.prop_fraud[0] + ")";
+                              }
+                              htmlResult += " Propensão à Fraude.";
+                              $('#resultClusterContent').html(htmlResult);
+                              $("#resultAnalysis").removeClass("hidden");
+                              $("#clientDataForm").addClass("hidden");
+                              setTimeout(function() {
+                                $('#loadingModal').modal('hide');
+                              }, 100);
+                          },
+                          error: function(error) {
+                            $('#loadingModal').modal('hide');
+                            msg = "";
+                            if (typeof error != 'undefined' && typeof error.responseJSON != 'undefined' && typeof error.responseJSON.message != 'undefined') {
+                              msg = error.responseJSON.message;
+                            } else {
+                              msg = "Ocorreu um erro (" + error.status + " - " + error.statusText + ")";
+                            }
+                            showError(msg);
+                          }
+                      });
+                    },
+                    error: function(error) {
+                      $('#loadingModal').modal('hide');
+                      msg = "";
+                      if (typeof error != 'undefined' && typeof error.responseJSON != 'undefined' && typeof error.responseJSON.message != 'undefined') {
+                        msg = error.responseJSON.message;
+                      } else {
+                        msg = "Ocorreu um erro (" + error.status + " - " + error.statusText + ")";
+                      }
+                      showError(msg);
+                    }
+                });
+
+                // Limpe o formulário e desabilite o botão de envio
+                $("form")[0].reset();
+                $("#submitButton").prop("disabled", true);
+            }
+        });
+
+        // Event listener para o botão "nova consulta"
+        $("#resetButton").click(resetForm);
+        $("#resetButtonError").click(resetForm);
+        $("#resetFormButton").click(resetForm);
+
+        // Função para validar o formulário
+        function validateForm() {
+            const gender = $("#gender").val();
+            const creditPreApproved = $("#creditPreApproved").val();
+            const age = $("#age").val();
+            const region = $("#region").val();
+            const propertyValue = $('#propertyValue').val();
+            const income = $("#income").val();
+            const creditScore = $('#creditScore').val();
+            if (propertyValue == '' || isNaN(propertyValue) || parseFloat(propertyValue) < 0) {
+              $('#propertyValue').val(0);
+            }
+            if (income == '' || isNaN(income) || parseFloat(income) < 0) {
+              $('#income').val(0);
+            }
+            if (creditScore == '' || isNaN(creditScore) || parseFloat(creditScore) < 0) {
+              $('#creditScore').val(0);
+            }
+            return gender && creditPreApproved && age && region;
+        }
+        
+        $('.raw-data-link').on('click', function (e) {
+            e.preventDefault();
+            $(this).hide();
+            $('#rawData').removeClass('hidden');
+        });
+    });
+
+    </script>
+</body>
+</html>
