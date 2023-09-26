@@ -24,5 +24,7 @@ O objetivo desta atividade é a criação de um painel para um aprovador de empr
 
 2. Implantação dos Modelos em uma Máquina Virtual na Nuvem Microsoft Azure
 
+3. Consumo da API gerada num Notebook Python no Google Colab.
+   
 ## Contato
 Para mais informações ou dúvidas, entre em contato com algum dos integrantes da equipe listados acima.
