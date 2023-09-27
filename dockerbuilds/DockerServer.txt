@@ -9,6 +9,11 @@ RUN apt-get install nano
 # Cria um diretório Base na imagem
 RUN mkdir -p /myServer
 RUN mkdir -p /Log
+# Cria diretório para incluir HTML estático
+RUN mkdir -p /templates
+
+# Copia o index.html para o diretório templates
+COPY /templates/index.html /templates/
 
 # Copia todo o conteúdo para o diretório Base
 COPY . /myServer
@@ -23,6 +28,8 @@ RUN pip install -r /myServer/requirements.txt
 # Expõe alguns diretórios para o HOST
 VOLUME /myServer/config
 VOLUME /Log
+# Expõe o diretório do HTML estático
+VOLUME /templates
 
 
 # Expõe para o HOST algumas portas, por padrão

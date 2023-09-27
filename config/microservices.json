@@ -2,11 +2,11 @@
   "models": {
     "predict": {
       "version": "V01",
-      "url": "http://serving01:8080/predict"
+      "url": "http://172.19.0.2:8080/predict"
     },
     "cluster": {
       "version": "V01",
-      "url": "http://serving02:8080/cluster"
+      "url": "http://172.19.0.3:8080/cluster"
     }
   }
 }
